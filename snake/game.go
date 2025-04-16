@@ -95,6 +95,11 @@ func (g *Game) updateSnake() {
 
 	newHead := Point{head.x + g.Direction.x, head.y + g.Direction.y}
 
+	if g.isCollision(newHead){
+		g.GameOver = true 
+		return
+	}
+
 	if newHead == g.food {
 		g.SpawnFood()
 		g.Snake = append([]Point{newHead}, g.Snake[:len(g.Snake)]...)
@@ -125,4 +130,27 @@ func (g *Game) keyboardListenerBind() {
 	if ebiten.IsKeyPressed(ebiten.KeyRight) {
 		g.Direction = dirRight
 	}
+}
+
+func (g *Game) isCollision(head Point) bool{
+	if head.x < 0 || head.y < 0 || head.x >= SCREEN_WIDTH/RECT_SIZE || head.y >= SCREEN_HEIGHT/RECT_SIZE {
+		return true
+	}
+	if g.collide(head){
+		return true
+	}
+	
+	return false
+}
+
+func (g *Game) collide(search Point) bool{
+	for i, point := range g.Snake{
+		if i == 0{
+			continue
+		}
+		if point == search{
+			return true
+		}
+	}
+	return false
 }
